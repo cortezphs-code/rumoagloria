@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rumo à Glória</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #060b08; min-height: 100vh; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useMemo, useEffect } = React;
+
+/* ============================== DADOS ============================== */
+
+const JOGADORES = [
+  { time: "Independiente 1984", jogadores: [
+    { nome: "Carlos Goyén", posicao: "GK", overall: 89 },
+    { nome: "Néstor Clausen", posicao: "DF", overall: 87 },
+    { nome: "Hugo Villaverde", posicao: "DF", overall: 90 },
+    { nome: "Enzo Trossero", posicao: "DF", overall: 86 },
+    { nome: "Carlos Enrique", posicao: "DF", overall: 91 },
+    { nome: "Ricardo Giusti", posicao: "MF", overall: 89 },
+    { nome: "Claudio Marangoni", posicao: "MF", overall: 88 },
+    { nome: "Ricardo Bochini", posicao: "MF", overall: 92 },
+    { nome: "Jorge Burruchaga", posicao: "MF", overall: 87 },
+    { nome: "Sergio Bufarini", posicao: "FW", overall: 91 },
+    { nome: "Alejandro Barberón", posicao: "FW", overall: 90 },
+  ]},
+  { time: "Boca Juniors 2007", jogadores: [
+    { nome: "Mauricio Caranta", posicao: "GK", overall: 87 },
+    { nome: "Hugo Ibarra", posicao: "DF", overall: 87 },
+    { nome: "\"Cata\" Díaz", posicao: "DF", overall: 90 },
+    { nome: "Claudio Morel Rodríguez", posicao: "DF", overall: 86 },
+    { nome: "Clemente Rodríguez", posicao: "DF", overall: 91 },
+    { nome: "Pablo Ledesma", posicao: "MF", overall: 90 },
+    { nome: "Éver Banega", posicao: "MF", overall: 89 },
+    { nome: "Neri Cardozo", posicao: "MF", overall: 93 },
+    { nome: "Juan Román Riquelme", posicao: "MF", overall: 98 },
+    { nome: "Rodrigo Palacio", posicao: "FW", overall: 93 },
+    { nome: "Martín Palermo", posicao: "FW", overall: 98 },
+  ]},
+  { time: "Peñarol 1987", jogadores: [
+    { nome: "Eduardo Pereira", posicao: "GK", overall: 84 },
+    { nome: "José Herrera", posicao: "DF", overall: 82 },
+    { nome: "Marcelo Rotti", posicao: "DF", overall: 93 },
+    { nome: "Obdulio Trasante", posicao: "DF", overall: 81 },
+    { nome: "Alfonso Domínguez", posicao: "DF", overall: 86 },
+    { nome: "José Perdomo", posicao: "MF", overall: 81 },
+    { nome: "Eduardo Da Silva", posicao: "MF", overall: 80 },
+    { nome: "Daniel Vidal", posicao: "MF", overall: 84 },
+    { nome: "Ricardo Viera", posicao: "MF", overall: 79 },
+    { nome: "Jorge Cabrera", posicao: "FW", overall: 83 },
+    { nome: "Diego Aguirre", posicao: "FW", overall: 82 },
+  ]},
+  { time: "River Plate 2018", jogadores: [
+    { nome: "Franco Armani", posicao: "GK", overall: 90 },
+    { nome: "Gonzalo Montiel", posicao: "DF", overall: 85 },
+    { nome: "Jonatan Maidana", posicao: "DF", overall: 88 },
+    { nome: "Javier Pinola", posicao: "DF", overall: 84 },
+    { nome: "Milton Casco", posicao: "DF", overall: 89 },
+    { nome: "Enzo Pérez", posicao: "MF", overall: 91 },
+    { nome: "Leonardo Ponzio", posicao: "MF", overall: 90 },
+    { nome: "Ignacio Fernández", posicao: "MF", overall: 94 },
+    { nome: "Exequiel Palacios", posicao: "MF", overall: 89 },
+    { nome: "Gonzalo \"Pity\" Martínez", posicao: "FW", overall: 97 },
+    { nome: "Lucas Pratto", posicao: "FW", overall: 91 },
+  ]},
+  { time: "Flamengo 1981", jogadores: [
+    { nome: "Raul", posicao: "GK", overall: 81 },
+    { nome: "Leandro", posicao: "DF", overall: 87 },
+    { nome: "Figueiredo", posicao: "DF", overall: 85 },
+    { nome: "Mozer", posicao: "DF", overall: 81 },
+    { nome: "Júnior", posicao: "DF", overall: 92 },
+    { nome: "Andrade", posicao: "MF", overall: 88 },
+    { nome: "Adílio", posicao: "MF", overall: 87 },
+    { nome: "Zico", posicao: "MF", overall: 99 },
+    { nome: "Lico", posicao: "FW", overall: 90 },
+    { nome: "Tita", posicao: "FW", overall: 93 },
+    { nome: "Nunes", posicao: "FW", overall: 92 },
+  ]},
+  { time: "Flamengo 2019", jogadores: [
+    { nome: "Diego Alves", posicao: "GK", overall: 86 },
+    { nome: "Rafinha", posicao: "DF", overall: 82 },
+    { nome: "Rodrigo Caio", posicao: "DF", overall: 85 },
+    { nome: "Pablo Marí", posicao: "DF", overall: 81 },
+    { nome: "Filipe Luís", posicao: "DF", overall: 86 },
+    { nome: "Willian Arão", posicao: "MF", overall: 88 },
+    { nome: "Gerson", posicao: "MF", overall: 87 },
+    { nome: "Everton Ribeiro", posicao: "MF", overall: 91 },
+    { nome: "Giorgian De Arrascaeta", posicao: "MF", overall: 93 },
+    { nome: "Bruno Henrique", posicao: "FW", overall: 93 },
+    { nome: "Gabriel Barbosa (Gabigol)", posicao: "FW", overall: 99 },
+  ]},
+  { time: "Flamengo 2022", jogadores: [
+    { nome: "Santos", posicao: "GK", overall: 81 },
+    { nome: "Rodinei", posicao: "DF", overall: 82 },
+    { nome: "David Luiz", posicao: "DF", overall: 91 },
+    { nome: "Léo Pereira", posicao: "DF", overall: 81 },
+    { nome: "Filipe Luís", posicao: "DF", overall: 86 },
+    { nome: "Thiago Maia", posicao: "MF", overall: 88 },
+    { nome: "João Gomes", posicao: "MF", overall: 87 },
+    { nome: "Everton Ribeiro", posicao: "MF", overall: 91 },
+    { nome: "Giorgian De Arrascaeta", posicao: "MF", overall: 93 },
+    { nome: "Gabriel Barbosa (Gabigol)", posicao: "FW", overall: 99 },
+    { nome: "Pedro", posicao: "FW", overall: 98 },
+  ]},
+  { time: "Flamengo 2025", jogadores: [
+    { nome: "Agustín Rossi", posicao: "GK", overall: 81 },
+    { nome: "Guillermo Varela", posicao: "DF", overall: 82 },
+    { nome: "Danilo", posicao: "DF", overall: 85 },
+    { nome: "Léo Pereira", posicao: "DF", overall: 81 },
+    { nome: "Alex Sandro", posicao: "DF", overall: 91 },
+    { nome: "Erick Pulgar", posicao: "MF", overall: 88 },
+    { nome: "Jorginho", posicao: "MF", overall: 93 },
+    { nome: "Giorgian De Arrascaeta", posicao: "MF", overall: 98 },
+    { nome: "Jorge Carrascal", posicao: "FW", overall: 90 },
+    { nome: "Samuel Lino", posicao: "FW", overall: 93 },
+    { nome: "Bruno Henrique", posicao: "FW", overall: 92 },
+  ]},
+  { time: "Estudiantes 2009", jogadores: [
+    { nome: "Mariano Andújar", posicao: "GK", overall: 87 },
+    { nome: "Christian Cellay", posicao: "DF", overall: 84 },
+    { nome: "Rolando Schiavi", posicao: "DF", overall: 92 },
+    { nome: "Leandro Desábato", posicao: "DF", overall: 88 },
+    { nome: "Germán Ré", posicao: "DF", overall: 88 },
+    { nome: "Enzo Pérez", posicao: "MF", overall: 82 },
+    { nome: "Rodrigo Braña", posicao: "MF", overall: 81 },
+    { nome: "Juan Sebastián Verón", posicao: "MF", overall: 97 },
+    { nome: "Leandro Benítez", posicao: "MF", overall: 85 },
+    { nome: "Mauro Boselli", posicao: "FW", overall: 80 },
+    { nome: "Gastón Fernández", posicao: "FW", overall: 79 },
+  ]},
+  { time: "Palmeiras 2021", jogadores: [
+    { nome: "Weverton", posicao: "GK", overall: 92 },
+    { nome: "Mayke", posicao: "DF", overall: 85 },
+    { nome: "Gustavo Gómez", posicao: "DF", overall: 88 },
+    { nome: "Luan", posicao: "DF", overall: 84 },
+    { nome: "Piquerez", posicao: "DF", overall: 89 },
+    { nome: "Danilo", posicao: "MF", overall: 86 },
+    { nome: "Zé Rafael", posicao: "MF", overall: 85 },
+    { nome: "Raphael Veiga", posicao: "MF", overall: 95 },
+    { nome: "Gustavo Scarpa", posicao: "MF", overall: 84 },
+    { nome: "Dudu", posicao: "FW", overall: 91 },
+    { nome: "Rony", posicao: "FW", overall: 85 },
+  ]},
+  { time: "Santos 2011", jogadores: [
+    { nome: "Rafael", posicao: "GK", overall: 74 },
+    { nome: "Danilo", posicao: "DF", overall: 76 },
+    { nome: "Edu Dracena", posicao: "DF", overall: 79 },
+    { nome: "Durval", posicao: "DF", overall: 75 },
+    { nome: "Léo", posicao: "DF", overall: 80 },
+    { nome: "Adriano", posicao: "MF", overall: 84 },
+    { nome: "Arouca", posicao: "MF", overall: 83 },
+    { nome: "Elano", posicao: "MF", overall: 92 },
+    { nome: "Paulo Henrique Ganso", posicao: "MF", overall: 90 },
+    { nome: "Neymar", posicao: "FW", overall: 99 },
+    { nome: "Zé Love", posicao: "FW", overall: 89 },
+  ]},
+  { time: "Nacional 1988", jogadores: [
+    { nome: "Jorge Seré", posicao: "GK", overall: 83 },
+    { nome: "José Luis Pintos Saldaña", posicao: "DF", overall: 81 },
+    { nome: "Daniel Revelez", posicao: "DF", overall: 84 },
+    { nome: "Hugo De León", posicao: "DF", overall: 80 },
+    { nome: "Carlos Favier Soca", posicao: "DF", overall: 85 },
+    { nome: "Santiago Ostolaza", posicao: "MF", overall: 80 },
+    { nome: "Jorge Cardaccio", posicao: "MF", overall: 79 },
+    { nome: "Yubert Lemos", posicao: "MF", overall: 83 },
+    { nome: "William Castro", posicao: "MF", overall: 78 },
+    { nome: "Ernesto Vargas", posicao: "FW", overall: 81 },
+    { nome: "Juan Carlos De Lima", posicao: "FW", overall: 80 },
+  ]},
+  { time: "São Paulo 2005", jogadores: [
+    { nome: "Rogério Ceni", posicao: "GK", overall: 93 },
+    { nome: "Fabão", posicao: "DF", overall: 82 },
+    { nome: "Diego Lugano", posicao: "DF", overall: 91 },
+    { nome: "Alex", posicao: "DF", overall: 81 },
+    { nome: "Cicinho", posicao: "MF", overall: 85 },
+    { nome: "Mineiro", posicao: "MF", overall: 83 },
+    { nome: "Josué", posicao: "MF", overall: 82 },
+    { nome: "Danilo", posicao: "MF", overall: 86 },
+    { nome: "Júnior", posicao: "MF", overall: 87 },
+    { nome: "Amoroso", posicao: "FW", overall: 88 },
+    { nome: "Luizão", posicao: "FW", overall: 82 },
+  ]},
+  { time: "Grêmio 2017", jogadores: [
+    { nome: "Marcelo Grohe", posicao: "GK", overall: 90 },
+    { nome: "Léo Moura", posicao: "DF", overall: 80 },
+    { nome: "Pedro Geromel", posicao: "DF", overall: 89 },
+    { nome: "Bressan", posicao: "DF", overall: 79 },
+    { nome: "Bruno Cortez", posicao: "DF", overall: 84 },
+    { nome: "Jailson", posicao: "MF", overall: 80 },
+    { nome: "Arthur", posicao: "MF", overall: 86 },
+    { nome: "Ramiro", posicao: "MF", overall: 83 },
+    { nome: "Michel", posicao: "MF", overall: 78 },
+    { nome: "Luan", posicao: "FW", overall: 81 },
+    { nome: "Fernandinho", posicao: "FW", overall: 80 },
+  ]},
+  { time: "Olimpia 2002", jogadores: [
+    { nome: "Ricardo Tavarelli", posicao: "GK", overall: 79 },
+    { nome: "Néstor Isasi", posicao: "DF", overall: 77 },
+    { nome: "Nelson Zelaya", posicao: "DF", overall: 80 },
+    { nome: "Da Silva", posicao: "DF", overall: 76 },
+    { nome: "Julio César Cáceres", posicao: "DF", overall: 81 },
+    { nome: "Julio Enciso", posicao: "MF", overall: 77 },
+    { nome: "Sergio Órteman", posicao: "MF", overall: 76 },
+    { nome: "Gastón Córdoba", posicao: "MF", overall: 80 },
+    { nome: "Richart Báez", posicao: "FW", overall: 74 },
+    { nome: "Miguel Benítez", posicao: "FW", overall: 77 },
+  ]},
+  { time: "Cruzeiro 1997", jogadores: [
+    { nome: "Dida", posicao: "GK", overall: 87 },
+    { nome: "Vitor", posicao: "DF", overall: 78 },
+    { nome: "Gelson", posicao: "DF", overall: 81 },
+    { nome: "Gottardo", posicao: "DF", overall: 77 },
+    { nome: "Nonato", posicao: "DF", overall: 82 },
+    { nome: "Fabinho", posicao: "MF", overall: 80 },
+    { nome: "Ricardinho", posicao: "MF", overall: 79 },
+    { nome: "Donizete Oliveira", posicao: "MF", overall: 83 },
+    { nome: "Palhinha", posicao: "MF", overall: 78 },
+    { nome: "Marcelo Ramos", posicao: "FW", overall: 89 },
+    { nome: "Elivélton", posicao: "FW", overall: 80 },
+  ]},
+  { time: "Internacional 2010", jogadores: [
+    { nome: "Renan", posicao: "GK", overall: 81 },
+    { nome: "Nei", posicao: "DF", overall: 79 },
+    { nome: "Bolívar", posicao: "DF", overall: 82 },
+    { nome: "Índio", posicao: "DF", overall: 78 },
+    { nome: "Kléber", posicao: "DF", overall: 83 },
+    { nome: "Sandro", posicao: "MF", overall: 79 },
+    { nome: "Guiñazu", posicao: "MF", overall: 78 },
+    { nome: "Tinga", posicao: "MF", overall: 82 },
+    { nome: "Andrés D'Alessandro", posicao: "MF", overall: 85 },
+    { nome: "Taison", posicao: "MF", overall: 85 },
+    { nome: "Rafael Sóbis", posicao: "FW", overall: 78 },
+  ]},
+  { time: "Corinthians 2012", jogadores: [
+    { nome: "Cássio", posicao: "GK", overall: 88 },
+    { nome: "Alessandro", posicao: "DF", overall: 79 },
+    { nome: "Chicão", posicao: "DF", overall: 82 },
+    { nome: "Leandro Castán", posicao: "DF", overall: 83 },
+    { nome: "Fábio Santos", posicao: "DF", overall: 83 },
+    { nome: "Ralf", posicao: "MF", overall: 78 },
+    { nome: "Paulinho", posicao: "MF", overall: 83 },
+    { nome: "Danilo", posicao: "MF", overall: 81 },
+    { nome: "Alex", posicao: "MF", overall: 76 },
+    { nome: "Emerson Sheik", posicao: "FW", overall: 77 },
+    { nome: "Jorge Henrique", posicao: "FW", overall: 76 },
+  ]},
+  { time: "Racing 1967", jogadores: [
+    { nome: "Agustín Cejas", posicao: "GK", overall: 77 },
+    { nome: "Roberto Perfumo", posicao: "DF", overall: 86 },
+    { nome: "Rubén Díaz", posicao: "DF", overall: 79 },
+    { nome: "Oscar Martín", posicao: "MF", overall: 75 },
+    { nome: "Alfio Basile", posicao: "MF", overall: 86 },
+    { nome: "Miguel Ángel Mori", posicao: "MF", overall: 78 },
+    { nome: "Juan Carlos Rulli", posicao: "MF", overall: 77 },
+    { nome: "João Cardoso", posicao: "FW", overall: 81 },
+    { nome: "Juan Carlos Cárdenas", posicao: "FW", overall: 76 },
+    { nome: "Norberto Raffo", posicao: "FW", overall: 79 },
+    { nome: "Humberto Maschio", posicao: "FW", overall: 84 },
+  ]},
+  { time: "Atlético Nacional 1989", jogadores: [
+    { nome: "René Higuita", posicao: "GK", overall: 85 },
+    { nome: "John Carmona", posicao: "DF", overall: 75 },
+    { nome: "Luis Carlos Perea", posicao: "DF", overall: 78 },
+    { nome: "Andrés Escobar", posicao: "DF", overall: 80 },
+    { nome: "Gildardo Gómez", posicao: "DF", overall: 79 },
+    { nome: "Alexis García", posicao: "MF", overall: 78 },
+    { nome: "Leonel Álvarez", posicao: "MF", overall: 82 },
+    { nome: "Luis Fajardo", posicao: "MF", overall: 81 },
+    { nome: "Albeiro Usuriaga", posicao: "FW", overall: 75 },
+    { nome: "John Jairo Tréllez", posicao: "FW", overall: 78 },
+    { nome: "Jaime Arango", posicao: "FW", overall: 77 },
+  ]},
+  { time: "Atlético-MG 2013", jogadores: [
+    { nome: "Victor", posicao: "GK", overall: 75 },
+    { nome: "Michel", posicao: "DF", overall: 75 },
+    { nome: "Réver", posicao: "DF", overall: 83 },
+    { nome: "Leonardo Silva", posicao: "DF", overall: 74 },
+    { nome: "Júnior César", posicao: "DF", overall: 85 },
+    { nome: "Pierre", posicao: "MF", overall: 78 },
+    { nome: "Josué", posicao: "MF", overall: 77 },
+    { nome: "Ronaldinho Gaúcho", posicao: "MF", overall: 95 },
+    { nome: "Diego Tardelli", posicao: "FW", overall: 84 },
+    { nome: "Bernard", posicao: "FW", overall: 81 },
+    { nome: "Jô", posicao: "FW", overall: 80 },
+  ]},
+  { time: "Botafogo 2024", jogadores: [
+    { nome: "John", posicao: "GK", overall: 77 },
+    { nome: "Vitinho", posicao: "DF", overall: 77 },
+    { nome: "Adryelson", posicao: "DF", overall: 80 },
+    { nome: "Alexander Barboza", posicao: "DF", overall: 76 },
+    { nome: "Alex Telles", posicao: "DF", overall: 86 },
+    { nome: "Gregore", posicao: "MF", overall: 80 },
+    { nome: "Marlon Freitas", posicao: "MF", overall: 79 },
+    { nome: "Savarino", posicao: "FW", overall: 85 },
+    { nome: "Thiago Almada", posicao: "FW", overall: 88 },
+    { nome: "Luiz Henrique", posicao: "FW", overall: 90 },
+    { nome: "Igor Jesus", posicao: "FW", overall: 82 },
+  ]},
+  { time: "Fluminense 2023", jogadores: [
+    { nome: "Fábio", posicao: "GK", overall: 75 },
+    { nome: "Samuel Xavier", posicao: "DF", overall: 75 },
+    { nome: "Nino", posicao: "DF", overall: 78 },
+    { nome: "Felipe Melo", posicao: "DF", overall: 79 },
+    { nome: "Marcelo", posicao: "DF", overall: 87 },
+    { nome: "André", posicao: "MF", overall: 79 },
+    { nome: "Lima", posicao: "MF", overall: 78 },
+    { nome: "Paulo Henrique Ganso", posicao: "MF", overall: 90 },
+    { nome: "Jhon Arias", posicao: "FW", overall: 77 },
+    { nome: "Germán Cano", posicao: "FW", overall: 87 },
+    { nome: "Keno", posicao: "FW", overall: 79 },
+  ]},
+  { time: "Vasco da Gama 1998", jogadores: [
+    { nome: "Carlos Germano", posicao: "GK", overall: 73 },
+    { nome: "Vágner", posicao: "DF", overall: 73 },
+    { nome: "Odvan", posicao: "DF", overall: 76 },
+    { nome: "Mauro Galvão", posicao: "DF", overall: 72 },
+    { nome: "Felipe", posicao: "DF", overall: 77 },
+    { nome: "Luisinho", posicao: "MF", overall: 77 },
+    { nome: "Nasa", posicao: "MF", overall: 76 },
+    { nome: "Juninho Pernambucano", posicao: "MF", overall: 89 },
+    { nome: "Pedrinho", posicao: "MF", overall: 75 },
+    { nome: "Donizete", posicao: "FW", overall: 79 },
+    { nome: "Luizão", posicao: "FW", overall: 78 },
+  ]},
+  { time: "Vélez Sarsfield 1994", jogadores: [
+    { nome: "José Luis Chilavert", posicao: "GK", overall: 85 },
+    { nome: "Héctor Almandoz", posicao: "DF", overall: 75 },
+    { nome: "Roberto Trotta", posicao: "DF", overall: 78 },
+    { nome: "Víctor Sotomayor", posicao: "DF", overall: 74 },
+    { nome: "Raúl Cardozo", posicao: "DF", overall: 79 },
+    { nome: "Fabián Compagnucci", posicao: "MF", overall: 79 },
+    { nome: "José Basualdo", posicao: "MF", overall: 84 },
+    { nome: "Marcelo Gómez", posicao: "MF", overall: 90 },
+    { nome: "Christian Bassedas", posicao: "MF", overall: 77 },
+    { nome: "Omar Asad", posicao: "FW", overall: 79 },
+    { nome: "José \"Turu\" Flores", posicao: "FW", overall: 78 },
+  ]},
+  { time: "Colo-Colo 1991", jogadores: [
+    { nome: "Daniel Morón", posicao: "GK", overall: 74 },
+    { nome: "Lizardo Garrido", posicao: "DF", overall: 73 },
+    { nome: "Miguel Ramírez", posicao: "DF", overall: 76 },
+    { nome: "Javier Margas", posicao: "DF", overall: 72 },
+    { nome: "Eduardo Vilches", posicao: "DF", overall: 77 },
+    { nome: "Juan Carlos Peralta", posicao: "MF", overall: 76 },
+    { nome: "Rubén Espinoza", posicao: "MF", overall: 75 },
+    { nome: "Jaime Pizarro", posicao: "MF", overall: 79 },
+    { nome: "Gabriel Mendoza", posicao: "MF", overall: 74 },
+    { nome: "Marcelo Barticciotto", posicao: "FW", overall: 85 },
+    { nome: "Luis Pérez", posicao: "FW", overall: 76 },
+  ]},
+  { time: "LDU Quito 2008", jogadores: [
+    { nome: "José Francisco Cevallos", posicao: "GK", overall: 81 },
+    { nome: "Jairo Campos", posicao: "DF", overall: 73 },
+    { nome: "Renán Calle", posicao: "DF", overall: 76 },
+    { nome: "Norberto Araujo", posicao: "DF", overall: 72 },
+    { nome: "Paúl Ambrosi", posicao: "DF", overall: 77 },
+    { nome: "Enrique Vera", posicao: "MF", overall: 74 },
+    { nome: "Patricio Urrutia", posicao: "MF", overall: 73 },
+    { nome: "Luis Bolaños", posicao: "MF", overall: 77 },
+    { nome: "Joffre Guerrón", posicao: "MF", overall: 72 },
+    { nome: "Damián Manso", posicao: "FW", overall: 74 },
+    { nome: "Claudio Bieler", posicao: "FW", overall: 73 },
+  ]},
+  { time: "Once Caldas 2004", jogadores: [
+    { nome: "Juan Carlos Henao", posicao: "GK", overall: 73 },
+    { nome: "Miguel Rojas", posicao: "DF", overall: 72 },
+    { nome: "Édgar Cataño", posicao: "DF", overall: 75 },
+    { nome: "Samuel Vanegas", posicao: "DF", overall: 71 },
+    { nome: "Edwin García", posicao: "DF", overall: 76 },
+    { nome: "Rubén Velásquez", posicao: "MF", overall: 73 },
+    { nome: "John Viáfara", posicao: "MF", overall: 72 },
+    { nome: "Arnulfo Valentierra", posicao: "MF", overall: 76 },
+    { nome: "Elkin Soto", posicao: "MF", overall: 71 },
+    { nome: "Dayro Moreno", posicao: "FW", overall: 73 },
+    { nome: "Herly Alcázar", posicao: "FW", overall: 72 },
+  ]},
+];
+
+const TIMES_HISTORICOS = [
+  { nome: "Independiente", ataque: 90, defesa: 90, fatorHistorico: 98 },
+  { nome: "Boca Juniors", ataque: 92, defesa: 88, fatorHistorico: 95 },
+  { nome: "Peñarol", ataque: 82, defesa: 85, fatorHistorico: 93 },
+  { nome: "River Plate", ataque: 91, defesa: 85, fatorHistorico: 90 },
+  { nome: "Flamengo", ataque: 93, defesa: 82, fatorHistorico: 89 },
+  { nome: "Estudiantes", ataque: 78, defesa: 88, fatorHistorico: 87 },
+  { nome: "Palmeiras", ataque: 85, defesa: 88, fatorHistorico: 85 },
+  { nome: "Santos", ataque: 90, defesa: 75, fatorHistorico: 84 },
+  { nome: "Nacional", ataque: 80, defesa: 84, fatorHistorico: 84 },
+  { nome: "São Paulo", ataque: 82, defesa: 84, fatorHistorico: 83 },
+  { nome: "Grêmio", ataque: 80, defesa: 83, fatorHistorico: 82 },
+  { nome: "Olimpia", ataque: 76, defesa: 80, fatorHistorico: 82 },
+  { nome: "Cruzeiro", ataque: 79, defesa: 80, fatorHistorico: 76 },
+  { nome: "Internacional", ataque: 78, defesa: 82, fatorHistorico: 76 },
+  { nome: "Corinthians", ataque: 76, defesa: 82, fatorHistorico: 70 },
+  { nome: "Racing", ataque: 78, defesa: 78, fatorHistorico: 68 },
+  { nome: "Atlético Nacional", ataque: 77, defesa: 76, fatorHistorico: 68 },
+  { nome: "Atlético-MG", ataque: 80, defesa: 76, fatorHistorico: 68 },
+  { nome: "Botafogo", ataque: 82, defesa: 78, fatorHistorico: 67 },
+  { nome: "Fluminense", ataque: 79, defesa: 76, fatorHistorico: 67 },
+  { nome: "Vasco da Gama", ataque: 78, defesa: 74, fatorHistorico: 66 },
+  { nome: "Vélez Sarsfield", ataque: 77, defesa: 76, fatorHistorico: 66 },
+  { nome: "Colo-Colo", ataque: 76, defesa: 75, fatorHistorico: 64 },
+  { nome: "LDU Quito", ataque: 73, defesa: 76, fatorHistorico: 63 },
+  { nome: "Once Caldas", ataque: 72, defesa: 74, fatorHistorico: 62 },
+];
+
+const TIMES_ATUAIS = [
+  { nome: "Flamengo", ataque: 92, defesa: 91 },
+  { nome: "Estudiantes", ataque: 78, defesa: 77 },
+  { nome: "Cusco", ataque: 74, defesa: 74 },
+  { nome: "Independiente Medellín", ataque: 65, defesa: 65 },
+  { nome: "Nacional", ataque: 88, defesa: 87 },
+  { nome: "Universitario", ataque: 78, defesa: 77 },
+  { nome: "Coquimbo Unido", ataque: 74, defesa: 74 },
+  { nome: "Deportes Tolima", ataque: 65, defesa: 65 },
+  { nome: "Fluminense", ataque: 89, defesa: 88 },
+  { nome: "Bolívar", ataque: 78, defesa: 77 },
+  { nome: "Deportivo La Guaira", ataque: 74, defesa: 74 },
+  { nome: "Independiente Rivadavia", ataque: 65, defesa: 65 },
+  { nome: "Boca Juniors", ataque: 90, defesa: 89 },
+  { nome: "Cruzeiro", ataque: 80, defesa: 79 },
+  { nome: "Universidad Católica", ataque: 74, defesa: 74 },
+  { nome: "Barcelona de Guayaquil", ataque: 65, defesa: 65 },
+  { nome: "Peñarol", ataque: 88, defesa: 87 },
+  { nome: "Corinthians", ataque: 80, defesa: 79 },
+  { nome: "Independiente Santa Fe", ataque: 74, defesa: 74 },
+  { nome: "Platense", ataque: 65, defesa: 65 },
+  { nome: "Palmeiras", ataque: 91, defesa: 90 },
+  { nome: "Cerro Porteño", ataque: 78, defesa: 77 },
+  { nome: "Junior Barranquilla", ataque: 74, defesa: 74 },
+  { nome: "Sporting Cristal", ataque: 65, defesa: 65 },
+  { nome: "LDU Quito", ataque: 88, defesa: 87 },
+  { nome: "Lanús", ataque: 78, defesa: 77 },
+  { nome: "Always Ready", ataque: 74, defesa: 74 },
+  { nome: "Mirassol", ataque: 66, defesa: 66 },
+  { nome: "Independiente del Valle", ataque: 88, defesa: 87 },
+  { nome: "Libertad", ataque: 78, defesa: 77 },
+  { nome: "Rosario Central", ataque: 74, defesa: 74 },
+  { nome: "Universidad Central", ataque: 65, defesa: 65 },
+];
+
+const FORMACOES = {
+  "4-4-2": { DF: 4, MF: 4, FW: 2 },
+  "4-3-3": { DF: 4, MF: 3, FW: 3 },
+  "5-3-2": { DF: 5, MF: 3, FW: 2 },
+  "3-5-2": { DF: 3, MF: 5, FW: 2 },
+};
+
+const FASES_ELIMINATORIAS = ["Oitavas", "Quartas", "Semifinal", "Final"];
+const ACCENT = "#e0b13c";
+
+/* ============================== HELPERS ============================== */
+
+/* RNG com seed opcional — usado pelo Desafio do Dia pra dar o mesmo sorteio pra todo mundo */
+const RNG = { fn: Math.random };
+
+function rnd() { return RNG.fn(); }
+
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function seedFromString(str) {
+  let h = 1779033703 ^ str.length;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return h >>> 0;
+}
+
+function dataDeHoje() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function ativarRngDoDia() { RNG.fn = mulberry32(seedFromString(dataDeHoje())); }
+function ativarRngNormal() { RNG.fn = Math.random; }
+
+function getNomeClube(chaveComAno) {
+  return chaveComAno.replace(/\s\d{4}$/, "");
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function poisson(lambda) {
+  const L = Math.exp(-lambda);
+  let k = 0, p = 1;
+  do { k++; p *= rnd(); } while (p > L);
+  return k - 1;
+}
+
+function golsEsperados(atk, def) {
+  const diff = atk - def;
+  return Math.max(0.15, 1.35 + diff / 22);
+}
+
+function simularPartida(timeA, timeB) {
+  const golsA = poisson(golsEsperados(timeA.ataque, timeB.defesa));
+  const golsB = poisson(golsEsperados(timeB.ataque, timeA.defesa));
+  return { golsA, golsB };
+}
+
+function sortearArtilheiros(squad, nGols) {
+  const candidatos = [...squad.FW, ...squad.MF];
+  if (candidatos.length === 0) return [];
+  const pesoTotal = candidatos.reduce((s, j) => s + j.overall, 0);
+  const eventos = [];
+  for (let i = 0; i < nGols; i++) {
+    let r = rnd() * pesoTotal;
+    let escolhido = candidatos[candidatos.length - 1];
+    for (const c of candidatos) {
+      if (r < c.overall) { escolhido = c; break; }
+      r -= c.overall;
+    }
+    eventos.push(escolhido.nome);
+  }
+  return eventos;
+}
+
+function calcularMVP(eventosLadoA, squadA) {
+  const contagem = {};
+  eventosLadoA.forEach(e => { if (e.jogador) contagem[e.jogador] = (contagem[e.jogador] || 0) + 1; });
+  const nomes = Object.keys(contagem);
+  if (nomes.length > 0) {
+    nomes.sort((a, b) => contagem[b] - contagem[a]);
+    const gols = contagem[nomes[0]];
+    return { nome: nomes[0], motivo: gols > 1 ? `${gols} gols na partida` : "Gol decisivo" };
+  }
+  const todos = [...squadA.GK, ...squadA.DF, ...squadA.MF, ...squadA.FW];
+  if (todos.length === 0) return null;
+  const melhor = todos.reduce((m, j) => (j.overall > m.overall ? j : m), todos[0]);
+  return { nome: melhor.nome, motivo: "Destaque em campo" };
+}
+
+
+function gerarEventosPartida(golsA, golsB, squadA, squadB) {
+  const minutosUsados = new Set();
+  function minutoLivre() {
+    let m;
+    do { m = 1 + Math.floor(rnd() * 90); } while (minutosUsados.has(m));
+    minutosUsados.add(m);
+    return m;
+  }
+  const artilheirosA = golsA > 0 ? sortearArtilheiros(squadA, golsA) : [];
+  const artilheirosB = squadB && golsB > 0 ? sortearArtilheiros(squadB, golsB) : [];
+  const eventos = [];
+  for (let i = 0; i < golsA; i++) eventos.push({ minuto: minutoLivre(), lado: "A", jogador: artilheirosA[i] });
+  for (let i = 0; i < golsB; i++) eventos.push({ minuto: minutoLivre(), lado: "B", jogador: artilheirosB[i] || null });
+  eventos.sort((a, b) => a.minuto - b.minuto);
+  return eventos;
+}
+
+function penaltis(forcaA, forcaB) {
+  let a = 0, b = 0;
+  const probA = Math.min(0.92, Math.max(0.45, 0.75 + (forcaA - forcaB) / 300));
+  const probB = Math.min(0.92, Math.max(0.45, 0.75 + (forcaB - forcaA) / 300));
+  for (let i = 0; i < 5; i++) {
+    if (rnd() < probA) a++;
+    if (rnd() < probB) b++;
+  }
+  while (a === b) {
+    if (rnd() < probA) a++; else b++;
+    if (a === b && rnd() < probB) b++;
+  }
+  return { a, b };
+}
+
+function calcularForcaSquad(squad) {
+  const media = (arr) => arr.length ? arr.reduce((s, j) => s + j.overall, 0) / arr.length : 60;
+  const avgFW = media(squad.FW);
+  const avgMF = media(squad.MF);
+  const avgDF = media(squad.DF);
+  const avgGK = squad.GK[0] ? squad.GK[0].overall : 60;
+
+  const origens = [...squad.GK, ...squad.DF, ...squad.MF, ...squad.FW].map(j => getNomeClube(j.origem));
+  const fatores = origens.map(nome => {
+    const clube = TIMES_HISTORICOS.find(t => t.nome === nome);
+    return clube ? clube.fatorHistorico : 70;
+  });
+  const avgFator = fatores.reduce((s, f) => s + f, 0) / fatores.length;
+  const multiplicador = 1 + (avgFator - 75) / 500;
+
+  const ataqueRaw = avgFW * 0.65 + avgMF * 0.35;
+  const defesaRaw = avgDF * 0.7 + avgGK * 0.3;
+
+  const todos = [...squad.GK, ...squad.DF, ...squad.MF, ...squad.FW];
+  const overallMedio = todos.reduce((s, j) => s + j.overall, 0) / todos.length;
+
+  return {
+    ataque: Math.round(ataqueRaw * multiplicador),
+    defesa: Math.round(defesaRaw * multiplicador),
+    overallMedio: Math.round(overallMedio * 10) / 10,
+    fatorTradicao: Math.round(avgFator),
+  };
+}
+
+/* Ano de referência de cada clube histórico (mesma campanha usada em jogadores-libertadores.json) */
+const ANO_HISTORICO = {
+  "Independiente": "1984", "Boca Juniors": "2007", "Peñarol": "1987", "River Plate": "2018",
+  "Flamengo": "2019", "Estudiantes": "2009", "Palmeiras": "2021", "Santos": "2011",
+  "Nacional": "1988", "São Paulo": "2005", "Grêmio": "2017", "Olimpia": "2002",
+  "Cruzeiro": "1997", "Internacional": "2010", "Corinthians": "2012", "Racing": "1967",
+  "Atlético Nacional": "1989", "Atlético-MG": "2013", "Botafogo": "2024", "Fluminense": "2023",
+  "Vasco da Gama": "1998", "Vélez Sarsfield": "1994", "Colo-Colo": "1991", "LDU Quito": "2008",
+  "Once Caldas": "2004",
+};
+
+function poolOponentes(modoCompeticao) {
+  if (modoCompeticao === "2026") {
+    return TIMES_ATUAIS.map(t => ({ nome: t.nome, ataque: t.ataque, defesa: t.defesa }));
+  }
+  return TIMES_HISTORICOS.map(t => ({
+    nome: ANO_HISTORICO[t.nome] ? `${t.nome} ${ANO_HISTORICO[t.nome]}` : t.nome,
+    ataque: t.ataque, defesa: t.defesa,
+  }));
+}
+
+function sortearAdversarioKnockout(modoCompeticao, rodadaIdx, jaEnfrentados) {
+  const pool = poolOponentes(modoCompeticao);
+  const disponiveis = pool.filter(t => !jaEnfrentados.includes(t.nome));
+  const ordenado = [...disponiveis].sort((a, b) => (b.ataque + b.defesa) - (a.ataque + a.defesa));
+  const cortesPct = [1, 0.6, 0.35, 0.15];
+  const corte = Math.max(3, Math.ceil(disponiveis.length * cortesPct[Math.min(rodadaIdx, 3)]));
+  const candidatos = ordenado.slice(0, corte);
+  return candidatos[Math.floor(rnd() * candidatos.length)];
+}
+
+function novaTabela(nomes) {
+  const t = {};
+  nomes.forEach(n => { t[n] = { nome: n, pontos: 0, jogos: 0, golsPro: 0, golsContra: 0 }; });
+  return t;
+}
+
+function aplicarResultado(tabela, a, b, golsA, golsB) {
+  tabela[a].jogos++; tabela[b].jogos++;
+  tabela[a].golsPro += golsA; tabela[a].golsContra += golsB;
+  tabela[b].golsPro += golsB; tabela[b].golsContra += golsA;
+  if (golsA > golsB) tabela[a].pontos += 3;
+  else if (golsA < golsB) tabela[b].pontos += 3;
+  else { tabela[a].pontos += 1; tabela[b].pontos += 1; }
+}
+
+function ordenarTabela(tabela) {
+  return Object.values(tabela).sort((x, y) =>
+    y.pontos - x.pontos ||
+    (y.golsPro - y.golsContra) - (x.golsPro - x.golsContra) ||
+    y.golsPro - x.golsPro
+  );
+}
+
+function todosConfrontos(nomes) {
+  const jogos = [];
+  for (let i = 0; i < nomes.length; i++) {
+    for (let j = i + 1; j < nomes.length; j++) jogos.push([nomes[i], nomes[j]]);
+  }
+  return jogos;
+}
+
+/* ---------- PONTUAÇÃO DE CAMPANHA ---------- */
+
+const PESO_FASE = { "Fase de Grupos": 0, "Oitavas": 15, "Quartas": 30, "Semifinal": 50, "Final": 75 };
+
+function calcularPontuacaoCampanha({ campeao, faseEliminacao, golsCampanha, modo }) {
+  const base = campeao ? 120 : (PESO_FASE[faseEliminacao] ?? 0);
+  const bonusGols = golsCampanha * 2;
+  const bonusModo = modo === "lendario" ? 1.25 : 1;
+  return Math.round((base + bonusGols) * bonusModo);
+}
+
+/* ---------- RANKING (armazenamento compartilhado) ---------- */
+
+const CHAVE_RANKING_GERAL = "ranking-geral";
+function chaveRankingDia() { return `ranking-dia-${dataDeHoje()}`; }
+
+async function carregarRanking(chave) {
+  try {
+    const v = localStorage.getItem("libertadores:" + chave);
+    return v ? JSON.parse(v) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function salvarNoRanking(chave, entrada) {
+  try {
+    const atual = await carregarRanking(chave);
+    const novo = [...atual, entrada].sort((a, b) => b.pontos - a.pontos).slice(0, 30);
+    localStorage.setItem("libertadores:" + chave, JSON.stringify(novo));
+    return novo;
+  } catch (e) {
+    return null;
+  }
+}
+
+/* ---------- CONQUISTAS ---------- */
+
+const CONQUISTAS = [
+  { id: "muralha", nome: "Muralha", descricao: "Foi campeão sem sofrer nenhum gol na campanha", cond: s => s.campeao && s.golsSofridos === 0 },
+  { id: "no-escuro", nome: "No Escuro", descricao: "Foi campeão no Modo Lendário, sem ver overall", cond: s => s.campeao && s.modo === "lendario" },
+  { id: "um-so-time", nome: "Time do Coração", descricao: "Escalou 3+ jogadores originários do mesmo clube histórico", cond: s => s.maiorGrupoClube >= 3 },
+  { id: "fechou-7x0", nome: "Fechou o 7x0", descricao: "Venceu uma partida exatamente por 7 a 0", cond: s => s.fechou7x0 },
+  { id: "goleada", nome: "Goleada", descricao: "Venceu uma partida por 4 gols de diferença ou mais", cond: s => s.margemMaxima >= 4 },
+  { id: "sem-penaltis", nome: "Sem Susto", descricao: "Foi campeão sem precisar de disputa de pênaltis", cond: s => s.campeao && !s.usouPenaltis },
+  { id: "heroi-penal", nome: "Herói dos Pênaltis", descricao: "Avançou de fase decidindo nos pênaltis", cond: s => s.usouPenaltis },
+  { id: "redencao", nome: "Redenção", descricao: "Foi campeão depois de usar os 3 resorteios do draft", cond: s => s.campeao && s.resorteiosUsados >= 3 },
+];
+
+async function carregarConquistas() {
+  try {
+    const v = localStorage.getItem("libertadores:conquistas");
+    return v ? JSON.parse(v) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function salvarConquistas(lista) {
+  try {
+    localStorage.setItem("libertadores:conquistas", JSON.stringify(lista));
+    return lista;
+  } catch (e) {
+    return null;
+  }
+}
+
+function avaliarConquistas(stats) {
+  return CONQUISTAS.filter(c => c.cond(stats)).map(c => c.id);
+}
+
+function maiorGrupoDeClube(squad) {
+  const contagem = {};
+  [...squad.GK, ...squad.DF, ...squad.MF, ...squad.FW].forEach(j => {
+    const clube = getNomeClube(j.origem);
+    contagem[clube] = (contagem[clube] || 0) + 1;
+  });
+  return Math.max(0, ...Object.values(contagem));
+}
+
+/* ---------- STREAK (sequência de títulos, salva localmente) ---------- */
+
+async function carregarStreak() {
+  try {
+    const v = localStorage.getItem("libertadores:streak-campeao");
+    return v ? JSON.parse(v) : { atual: 0, recorde: 0 };
+  } catch (e) {
+    return { atual: 0, recorde: 0 };
+  }
+}
+
+async function salvarStreak(campeao) {
+  try {
+    const atual = await carregarStreak();
+    const novoAtual = campeao ? atual.atual + 1 : 0;
+    const novo = { atual: novoAtual, recorde: Math.max(atual.recorde, novoAtual) };
+    localStorage.setItem("libertadores:streak-campeao", JSON.stringify(novo));
+    return novo;
+  } catch (e) {
+    return { atual: 0, recorde: 0 };
+  }
+}
+
+/* ---------- CARD DE RESULTADO (estilo Wordle, pra compartilhar) ---------- */
+
+function gerarTextoCompartilhavel({ nomeTime, campeao, faseEliminacao, historicoResultados, pontos, modo, modoCompeticao }) {
+  const emoji = { V: "🟩", D: "🟥", E: "🟨", P: "🟦" };
+  const linha = historicoResultados.map(r => emoji[r] || "⬜").join(" ");
+  const modoTxt = modo === "lendario" ? "Modo Lendário" : "Modo Normal";
+  const compTxt = modoCompeticao === "2026" ? "Libertadores 2026" : "Libertadores Histórica";
+  const resultadoTxt = campeao ? "🏆 CAMPEÃO" : `Eliminado na ${faseEliminacao}`;
+  return `⚽ Rumo à Glória — ${nomeTime}\n${compTxt} · ${modoTxt}\n${linha}\n${resultadoTxt} · ${pontos} pontos`;
+}
+
+/* ============================== UI PEQUENAS ============================== */
+
+function Monograma({ nome, tamanho = 48 }) {
+  const iniciais = (nome || "").trim().split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase() || "?";
+  return (
+    <div style={{
+      width: tamanho, height: tamanho, borderRadius: "50%", flexShrink: 0,
+      background: `radial-gradient(circle at 32% 28%, #f2d383, ${ACCENT} 60%, #8a651f 100%)`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontWeight: 900, color: "#241a05", fontSize: tamanho * 0.36,
+      boxShadow: "0 2px 6px rgba(0,0,0,.5), inset 0 1px 1px rgba(255,255,255,.5)",
+    }}>{iniciais}</div>
+  );
+}
+
+/* Cores reais dos clubes (principal + secundária) — cobre os 32 times atuais e os 25 históricos */
+const CORES_CLUBES = {
+  "Flamengo": ["#C8102E", "#131516"],
+  "Estudiantes": ["#C8102E", "#FFFFFF"],
+  "Cusco": ["#6A1B7A", "#FFFFFF"],
+  "Independiente Medellín": ["#C8102E", "#FFFFFF"],
+  "Nacional": ["#FFFFFF", "#1B3F8B"],
+  "Universitario": ["#F2E7C9", "#7A1E3A"],
+  "Coquimbo Unido": ["#7A1E3A", "#F0B429"],
+  "Deportes Tolima": ["#C8102E", "#F0B429"],
+  "Fluminense": ["#7A1E3A", "#1E7A4A"],
+  "Bolívar": ["#FFFFFF", "#5DB3E6"],
+  "Deportivo La Guaira": ["#1B3F8B", "#FFFFFF"],
+  "Independiente Rivadavia": ["#1E7A4A", "#FFFFFF"],
+  "Boca Juniors": ["#1B3F8B", "#F0B429"],
+  "Cruzeiro": ["#1B3F8B", "#FFFFFF"],
+  "Universidad Católica": ["#1B3F8B", "#FFFFFF"],
+  "Barcelona de Guayaquil": ["#F0B429", "#C8102E"],
+  "Peñarol": ["#131516", "#F0B429"],
+  "Corinthians": ["#131516", "#FFFFFF"],
+  "Independiente Santa Fe": ["#C8102E", "#FFFFFF"],
+  "Platense": ["#8A5A32", "#FFFFFF"],
+  "Palmeiras": ["#1E7A4A", "#FFFFFF"],
+  "Cerro Porteño": ["#1B3F8B", "#C8102E"],
+  "Junior Barranquilla": ["#C8102E", "#FFFFFF"],
+  "Sporting Cristal": ["#5DB3E6", "#FFFFFF"],
+  "LDU Quito": ["#FFFFFF", "#C8102E"],
+  "Lanús": ["#7A1E3A", "#FFFFFF"],
+  "Always Ready": ["#C8102E", "#131516"],
+  "Mirassol": ["#F0B429", "#1E7A4A"],
+  "Independiente del Valle": ["#C8102E", "#131516"],
+  "Libertad": ["#131516", "#FFFFFF"],
+  "Rosario Central": ["#1B3F8B", "#F0B429"],
+  "Universidad Central": ["#1B3F8B", "#FFFFFF"],
+  "Independiente": ["#C8102E", "#FFFFFF"],
+  "River Plate": ["#FFFFFF", "#5DB3E6"],
+  "Santos": ["#FFFFFF", "#131516"],
+  "São Paulo": ["#C8102E", "#131516"],
+  "Grêmio": ["#1B3F8B", "#131516"],
+  "Olimpia": ["#131516", "#FFFFFF"],
+  "Internacional": ["#C8102E", "#FFFFFF"],
+  "Racing": ["#5DB3E6", "#FFFFFF"],
+  "Atlético Nacional": ["#1E7A4A", "#FFFFFF"],
+  "Atlético-MG": ["#131516", "#FFFFFF"],
+  "Botafogo": ["#131516", "#FFFFFF"],
+  "Vasco da Gama": ["#131516", "#FFFFFF"],
+  "Vélez Sarsfield": ["#FFFFFF", "#1B3F8B"],
+  "Colo-Colo": ["#FFFFFF", "#131516"],
+  "Once Caldas": ["#FFFFFF", "#1B3F8B"],
+};
+
+function corDoClube(nome) {
+  const base = getNomeClube(nome || "");
+  return CORES_CLUBES[base] || ["#5a5a5a", "#8a8a8a"];
+}
+
+/* Troféu genérico (taça estilizada, não é reprodução de nenhum troféu real) */
+function TrofeuGenerico({ tamanho = 170 }) {
+  return (
+    <svg viewBox="0 0 200 240" width={tamanho} height={tamanho * 1.2} style={{ margin: "0 auto", display: "block" }}>
+      <defs>
+        <linearGradient id="tro-gold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fbe3a1" />
+          <stop offset="45%" stopColor="#e0b13c" />
+          <stop offset="100%" stopColor="#9c7423" />
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="10" r="8" fill="url(#tro-gold)" />
+      <path d="M55 45 L15 55 L20 95 L58 112" fill="none" stroke="url(#tro-gold)" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M145 45 L185 55 L180 95 L142 112" fill="none" stroke="url(#tro-gold)" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M52 38 L100 20 L148 38 L142 88 L100 150 L58 88 Z" fill="url(#tro-gold)" />
+      <path d="M52 38 L100 55 L148 38" fill="none" stroke="#fbe3a1" strokeWidth="3" opacity="0.5" />
+      <rect x="92" y="150" width="16" height="48" fill="url(#tro-gold)" />
+      <rect x="75" y="196" width="50" height="18" rx="2" fill="url(#tro-gold)" />
+      <rect x="55" y="212" width="90" height="16" rx="2" fill="url(#tro-gold)" />
+    </svg>
+  );
+}
+
+/* Bola bicolor com as cores reais do clube — usada pra representar os adversários */
+function BolaClube({ nome, tamanho = 48 }) {
+  const [c1, c2] = corDoClube(nome);
+  return (
+    <div style={{
+      width: tamanho, height: tamanho, borderRadius: "50%", flexShrink: 0,
+      background: `conic-gradient(from 90deg, ${c1} 0deg 180deg, ${c2} 180deg 360deg)`,
+      boxShadow: "0 2px 6px rgba(0,0,0,.5), inset 0 2px 3px rgba(255,255,255,.35), inset 0 -3px 5px rgba(0,0,0,.35)",
+      border: "1px solid rgba(255,255,255,.15)",
+    }} />
+  );
+}
+
+function Badge({ children, tone = "neutral" }) {
+  const tones = {
+    neutral: "bg-white/10 text-white/70",
+    open: "bg-emerald-500/20 text-emerald-300",
+    full: "bg-white/5 text-white/25",
+  };
+  return <span className={`text-[10px] font-bold tracking-wide px-1.5 py-0.5 rounded ${tones[tone]}`}>{children}</span>;
+}
+
+function CartaJogador({ jogador, disabled, onClick, mostrarOverall }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`carta-jogador text-left w-full rounded-xl p-3 border transition-all duration-150 ${
+        disabled
+          ? "opacity-30 cursor-not-allowed border-white/5 bg-white/[0.02]"
+          : "border-white/10 bg-white/[0.04] hover:border-white/30 hover:bg-white/[0.08] hover:-translate-y-0.5 cursor-pointer"
+      }`}
+      style={!disabled ? { borderColor: "rgba(224,177,60,.25)" } : undefined}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <Badge tone={disabled ? "full" : "open"}>{jogador.posicao}</Badge>
+        {mostrarOverall && <span className="numero text-xl leading-none" style={{ color: ACCENT }}>{jogador.overall}</span>}
+      </div>
+      <div className="font-semibold text-sm text-white/90 leading-tight">{jogador.nome}</div>
+    </button>
+  );
+}
+
+function MiniProgresso({ squad, formacao }) {
+  const linhas = [{ pos: "GK", max: 1 }, { pos: "DF", max: formacao.DF }, { pos: "MF", max: formacao.MF }, { pos: "FW", max: formacao.FW }];
+  return (
+    <div className="flex gap-4 justify-center flex-wrap">
+      {linhas.map(l => (
+        <div key={l.pos} className="flex items-center gap-1.5">
+          <span className="text-[10px] font-bold text-white/40 w-6">{l.pos}</span>
+          <div className="flex gap-1">
+            {Array.from({ length: l.max }).map((_, i) => (
+              <div key={i} className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ background: i < squad[l.pos].length ? ACCENT : "transparent" }} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ====================== PARTIDA AO VIVO (relógio ultra-rápido) ====================== */
+
+function PartidaAoVivo({ nomeTime, adversarioNome, adversarioEhJogador, squadA, golsA, golsB, eventos, pen, onContinuar }) {
+  const [minuto, setMinuto] = useState(0);
+  const [placarA, setPlacarA] = useState(0);
+  const [placarB, setPlacarB] = useState(0);
+  const [log, setLog] = useState([]);
+  const [etapa, setEtapa] = useState("rolando"); // rolando | penaltis | fim
+
+  useEffect(() => {
+    let cancelado = false;
+    let m = 0;
+    const revelados = new Set();
+
+    function tick() {
+      if (cancelado) return;
+      m += 2;
+      if (m > 90) m = 90;
+      setMinuto(m);
+
+      eventos.forEach((ev, i) => {
+        if (ev.minuto <= m && !revelados.has(i)) {
+          revelados.add(i);
+          if (ev.lado === "A") setPlacarA(p => p + 1);
+          else setPlacarB(p => p + 1);
+          setLog(l => [...l, ev]);
+        }
+      });
+
+      if (m < 90) {
+        setTimeout(tick, 45);
+      } else {
+        if (pen) {
+          setTimeout(() => setEtapa("penaltis"), 500);
+          setTimeout(() => setEtapa("fim"), 1400);
+        } else {
+          setTimeout(() => setEtapa("fim"), 500);
+        }
+      }
+    }
+    const t0 = setTimeout(tick, 250);
+    return () => { cancelado = true; clearTimeout(t0); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="animate-[cartaIn_.3s_ease] text-center py-6">
+      <div className="flex items-center justify-center gap-3 mb-8">
+        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+        <span className="numero text-lg text-white/70">{etapa === "rolando" ? `${minuto}'` : etapa === "penaltis" ? "Pênaltis" : "Fim de jogo"}</span>
+      </div>
+
+      <div className="flex items-center justify-center gap-8 mb-8">
+        <div className="flex flex-col items-center gap-3">
+          <Monograma nome={nomeTime} tamanho={56} />
+          <span className="text-white/80 text-sm font-semibold max-w-[110px] leading-tight">{nomeTime}</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="numero text-6xl text-white">{placarA}</span>
+          <span className="numero text-3xl text-white/20">-</span>
+          <span className="numero text-6xl text-white">{placarB}</span>
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          {adversarioEhJogador ? <Monograma nome={adversarioNome} tamanho={56} /> : <BolaClube nome={adversarioNome} tamanho={56} />}
+          <span className="text-white/80 text-sm font-semibold max-w-[110px] leading-tight">{adversarioNome}</span>
+        </div>
+      </div>
+
+      {etapa === "penaltis" && (
+        <div className="text-white/50 text-sm mb-4">Vai para os pênaltis...</div>
+      )}
+
+      {etapa === "fim" && (
+        <div className="animate-[cartaIn_.3s_ease]">
+          {pen && <div className="text-white/50 text-sm mb-2">Pênaltis: {pen.a} x {pen.b}</div>}
+          {log.filter(e => e.lado === "A" && e.jogador).length > 0 && (
+            <div className="text-white/50 text-sm mb-1">{nomeTime}: {log.filter(e => e.lado === "A" && e.jogador).map(e => `${e.jogador} (${e.minuto}')`).join(", ")}</div>
+          )}
+          {adversarioEhJogador && log.filter(e => e.lado === "B" && e.jogador).length > 0 && (
+            <div className="text-white/50 text-sm mb-6">{adversarioNome}: {log.filter(e => e.lado === "B" && e.jogador).map(e => `${e.jogador} (${e.minuto}')`).join(", ")}</div>
+          )}
+          {!adversarioEhJogador && squadA && (() => {
+            const mvp = calcularMVP(log.filter(e => e.lado === "A"), squadA);
+            return mvp ? (
+              <div className="inline-block mb-6 px-4 py-2 rounded-xl animate-[cartaIn_.4s_ease]" style={{ background: `${ACCENT}18`, border: `1px solid ${ACCENT}55` }}>
+                <div className="text-[10px] uppercase tracking-wider" style={{ color: ACCENT }}>⭐ MVP da Partida</div>
+                <div className="font-bold text-white text-sm">{mvp.nome}</div>
+                <div className="text-white/40 text-[11px]">{mvp.motivo}</div>
+              </div>
+            ) : null;
+          })()}
+          <button onClick={() => onContinuar({ golsA, golsB, pen })} className="px-10 py-4 rounded-xl font-bold text-black text-lg" style={{ background: ACCENT }}>
+            Continuar
+          </button>
+        </div>
+      )}
+
+      {etapa !== "fim" && log.length > 0 && (
+        <div className="text-white/30 text-xs mt-4">
+          {log[log.length - 1].lado === "A" ? `GOOOL do ${nomeTime}!` : adversarioEhJogador ? `Gol do ${adversarioNome}!` : "Gol do adversário"} ({log[log.length - 1].minuto}')
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================== TELAS ============================== */
+
+function TelaSetup({ nomeTime, setNomeTime, formacaoKey, setFormacaoKey, modo, setModo, modoCompeticao, setModoCompeticao, onIniciar, tituloEtapa, ocultarModoCompeticao }) {
+  return (
+    <div className="animate-[cartaIn_.4s_ease]">
+      <div className="text-center mb-10">
+        <div className="flex justify-center mb-3"><Monograma nome={nomeTime} tamanho={56} /></div>
+        <h1 className="titulo text-3xl md:text-4xl text-white">Rumo à Glória</h1>
+        <p className="text-white/40 text-sm mt-2">{tituloEtapa || "Monte seu time dos sonhos, um lendário de cada vez"}</p>
+      </div>
+
+      <div className="space-y-8">
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-white/40 mb-2">Nome do time</label>
+          <input
+            value={nomeTime}
+            onChange={e => setNomeTime(e.target.value || "Seleção do Jogador")}
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-white/30 transition-colors"
+            maxLength={30}
+          />
+        </div>
+
+        {!ocultarModoCompeticao && (
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-white/40 mb-3">Contra quem você vai jogar?</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button onClick={() => setModoCompeticao("2026")}
+              className={`p-4 rounded-xl border text-left transition-colors ${modoCompeticao === "2026" ? "border-white/40 bg-white/10" : "border-white/10 hover:border-white/20"}`}>
+              <div className="font-bold text-white text-sm mb-1">Libertadores 2026</div>
+              <div className="text-xs text-white/40">Enfrente os times que estão disputando a Libertadores atual</div>
+            </button>
+            <button onClick={() => setModoCompeticao("historica")}
+              className={`p-4 rounded-xl border text-left transition-colors ${modoCompeticao === "historica" ? "border-white/40 bg-white/10" : "border-white/10 hover:border-white/20"}`}>
+              <div className="font-bold text-white text-sm mb-1">Libertadores Histórica</div>
+              <div className="text-xs text-white/40">Enfrente os próprios clubes lendários (Boca, River, Peñarol...)</div>
+            </button>
+          </div>
+        </div>
+        )}
+
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-white/40 mb-3">Formação</label>
+          <div className="grid grid-cols-4 gap-2">
+            {Object.keys(FORMACOES).map(f => (
+              <button key={f} onClick={() => setFormacaoKey(f)}
+                className="py-3 rounded-lg text-sm font-bold border transition-colors"
+                style={formacaoKey === f ? { background: ACCENT, borderColor: ACCENT, color: "#241a05" } : { borderColor: "rgba(255,255,255,.1)", color: "rgba(255,255,255,.6)" }}>
+                {f}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-white/40 mb-3">Modo</label>
+          <div className="grid grid-cols-2 gap-3">
+            <button onClick={() => setModo("normal")}
+              className={`p-4 rounded-xl border text-left transition-colors ${modo === "normal" ? "border-white/40 bg-white/10" : "border-white/10 hover:border-white/20"}`}>
+              <div className="font-bold text-white text-sm mb-1">Modo Normal</div>
+              <div className="text-xs text-white/40">Vê o overall de cada jogador no draft</div>
+            </button>
+            <button onClick={() => setModo("lendario")}
+              className={`p-4 rounded-xl border text-left transition-colors ${modo === "lendario" ? "border-white/40 bg-white/10" : "border-white/10 hover:border-white/20"}`}>
+              <div className="font-bold text-white text-sm mb-1">Modo Lendário</div>
+              <div className="text-xs text-white/40">Overall escondido — confie no seu conhecimento de futebol</div>
+            </button>
+          </div>
+        </div>
+
+        <button onClick={onIniciar}
+          className="w-full py-4 rounded-xl font-bold text-lg mt-4 transition-transform hover:scale-[1.01] active:scale-[0.99]"
+          style={{ background: ACCENT, color: "#241a05" }}>
+          Começar o Draft
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function TelaDraft({ modo, timeAtual, squad, formacao, rerolls, rodada, totalVagas, vagaAberta, onEscolher, onResortear }) {
+  const ano = useMemo(() => { const m = timeAtual.time.match(/(\d{4})$/); return m ? m[1] : ""; }, [timeAtual]);
+  const nomeClube = timeAtual.time.replace(/\s\d{4}$/, "");
+  const totalFeito = squad.GK.length + squad.DF.length + squad.MF.length + squad.FW.length;
+
+  return (
+    <div key={timeAtual.time} className="animate-[cartaIn_.3s_ease]">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <div className="text-xs text-white/40 uppercase tracking-wider">Rodada {rodada} · Elenco de origem (escolha 1 jogador)</div>
+          <div className="titulo text-2xl text-white">{nomeClube} <span style={{ color: ACCENT }}>{ano}</span></div>
+        </div>
+        <button onClick={onResortear} disabled={rerolls <= 0}
+          className={`px-4 py-2 rounded-lg border text-sm font-bold transition-colors ${rerolls > 0 ? "border-white/20 text-white/80 hover:border-white/40" : "border-white/5 text-white/20 cursor-not-allowed"}`}>
+          Sortear Novamente ({rerolls}/3)
+        </button>
+      </div>
+
+      <div className="mb-6"><MiniProgresso squad={squad} formacao={formacao} /></div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+        {timeAtual.jogadores.map((j, i) => (
+          <div key={j.nome + i} style={{ animationDelay: `${i * 40}ms` }}>
+            <CartaJogador jogador={j} disabled={!vagaAberta(squad, j.posicao)} mostrarOverall={modo === "normal"} onClick={() => onEscolher(j)} />
+          </div>
+        ))}
+      </div>
+
+      <div className="text-center text-white/30 text-xs mt-6">{totalFeito}/{totalVagas} vagas preenchidas</div>
+    </div>
+  );
+}
+
+function TelaSquad({ nomeTime, squad, forca, onContinuar }) {
+  const linhas = [{ label: "Ataque", jogadores: squad.FW }, { label: "Meio", jogadores: squad.MF }, { label: "Defesa", jogadores: squad.DF }, { label: "Gol", jogadores: squad.GK }];
+  return (
+    <div className="animate-[cartaIn_.4s_ease]">
+      <div className="text-center mb-8">
+        <div className="flex justify-center mb-3"><Monograma nome={nomeTime} tamanho={44} /></div>
+        <h2 className="titulo text-2xl text-white">{nomeTime}</h2>
+        <div className="flex justify-center gap-6 mt-4">
+          <div><div className="numero text-3xl" style={{ color: ACCENT }}>{forca.overallMedio}</div><div className="text-[10px] uppercase text-white/40">Overall médio</div></div>
+          <div><div className="numero text-3xl text-white">{forca.fatorTradicao}</div><div className="text-[10px] uppercase text-white/40">Fator tradição</div></div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl p-5 mb-8 space-y-4" style={{ background: "linear-gradient(180deg, #1c2a1e, #10160f)" }}>
+        {linhas.map(l => (
+          <div key={l.label}>
+            <div className="text-[10px] uppercase tracking-wider text-white/40 mb-2 text-center">{l.label}</div>
+            <div className="flex justify-center gap-2 flex-wrap">
+              {l.jogadores.map((j, i) => (
+                <div key={i} className="bg-black/30 rounded-lg px-3 py-2 text-center min-w-[92px]">
+                  <div className="text-[11px] font-semibold text-white/90 leading-tight">{j.nome}</div>
+                  <div className="numero text-base" style={{ color: ACCENT }}>{j.overall}</div>
+                  <div className="text-[9px] text-white/30">{getNomeClube(j.origem)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <button onClick={onContinuar} className="w-full py-4 rounded-xl font-bold text-lg" style={{ background: ACCENT, color: "#241a05" }}>
+        Sortear Grupo
+      </button>
+    </div>
+  );
+}
+
+function TelaGrupo({ nomeTime, modoCompeticao, grupoOponentes, tabela, pendentes, onJogar, onAvancar }) {
+  const ordenada = ordenarTabela(tabela);
+  const todosJogados = pendentes.length === 0;
+  const restamIdas = pendentes.some(p => p.perna === "Ida");
+  const idasFeitas = 3 - pendentes.filter(p => p.perna === "Ida").length;
+  const voltasFeitas = 3 - pendentes.filter(p => p.perna === "Volta").length;
+
+  return (
+    <div className="animate-[cartaIn_.4s_ease]">
+      <div className="text-center mb-6">
+        <div className="text-xs uppercase tracking-wider text-white/40">Fase de Grupos</div>
+        <h2 className="titulo text-3xl text-white">Seu Grupo</h2>
+        <div className="inline-block mt-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider" style={{ background: `${ACCENT}22`, color: ACCENT }}>
+          Adversários: {modoCompeticao === "2026" ? "Libertadores 2026" : "Libertadores Histórica"}
+        </div>
+      </div>
+
+      {!todosJogados && (
+        <div className="mb-6">
+          <div className="flex justify-center gap-8 mb-6">
+            <div className="text-center">
+              <div className="numero text-2xl" style={{ color: restamIdas ? ACCENT : "rgba(255,255,255,.3)" }}>{idasFeitas}/3</div>
+              <div className="text-[10px] uppercase text-white/40">Jogos de ida</div>
+            </div>
+            <div className="text-center">
+              <div className="numero text-2xl" style={{ color: !restamIdas ? ACCENT : "rgba(255,255,255,.2)" }}>{voltasFeitas}/3</div>
+              <div className="text-[10px] uppercase text-white/40">Jogos de volta</div>
+            </div>
+          </div>
+          <div className="text-center text-white/30 text-xs mb-4">A classificação só é revelada depois da última partida</div>
+
+          <div className="space-y-2">
+            {pendentes.map(p => {
+              const habilitado = p.perna === "Ida" || !restamIdas;
+              return (
+                <button key={p.id} onClick={() => habilitado && onJogar(p)} disabled={!habilitado}
+                  className={`w-full flex items-center justify-between border rounded-lg px-4 py-3 transition-colors ${
+                    habilitado ? "bg-white/5 hover:bg-white/10 border-white/10 cursor-pointer" : "bg-white/[0.02] border-white/5 opacity-40 cursor-not-allowed"
+                  }`}>
+                  <span className="flex items-center gap-2 text-white/90 text-sm font-medium">
+                    <BolaClube nome={p.adversario} tamanho={22} />
+                    {nomeTime} vs {p.adversario} <span className="text-white/40 text-xs">({p.perna})</span>
+                  </span>
+                  <span className="text-xs font-bold" style={{ color: habilitado ? ACCENT : "rgba(255,255,255,.3)" }}>
+                    {habilitado ? "Simular Partida" : "Aguardando fim dos jogos de ida"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {todosJogados && (
+        <div className="animate-[cartaIn_.4s_ease]">
+          <div className="text-center text-xs uppercase tracking-wider text-white/40 mb-3">Classificação final do grupo</div>
+          <div className="rounded-xl overflow-hidden border border-white/10 mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-white/5 text-white/40 text-[10px] uppercase">
+                  <th className="text-left py-2 px-3">Time</th>
+                  <th className="py-2 px-2">P</th>
+                  <th className="py-2 px-2">J</th>
+                  <th className="py-2 px-2">SG</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ordenada.map((t, i) => (
+                  <tr key={t.nome} className={`border-t border-white/5 ${t.nome === nomeTime ? "bg-white/10" : ""} ${i < 2 ? "" : "opacity-60"}`}>
+                    <td className="py-2 px-3 flex items-center gap-2">
+                      {i < 2 && <span style={{ color: ACCENT }} className="text-xs">●</span>}
+                      <span className="text-white/90 font-medium">{t.nome}</span>
+                    </td>
+                    <td className="text-center numero text-white">{t.pontos}</td>
+                    <td className="text-center text-white/50">{t.jogos}</td>
+                    <td className="text-center text-white/50">{t.golsPro - t.golsContra}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <button onClick={onAvancar} className="w-full py-4 rounded-xl font-bold text-lg" style={{ background: ACCENT, color: "#241a05" }}>
+            Ver Fase Eliminatória
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TelaKnockout({ nomeTime, modoCompeticao, faseNome, adversario, onJogar }) {
+  return (
+    <div className="animate-[cartaIn_.4s_ease] text-center">
+      <div className="text-xs uppercase tracking-wider text-white/40 mb-1">{faseNome}</div>
+      <h2 className="titulo text-3xl text-white mb-1">Mata-mata</h2>
+      <div className="inline-block mb-8 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider" style={{ background: `${ACCENT}22`, color: ACCENT }}>
+        Adversários: {modoCompeticao === "2026" ? "Libertadores 2026" : "Libertadores Histórica"}
+      </div>
+
+      <div className="flex items-center justify-center gap-6 mb-10">
+        <div className="flex flex-col items-center gap-2"><Monograma nome={nomeTime} tamanho={64} /><span className="font-bold text-white text-sm">{nomeTime}</span></div>
+        <span className="numero text-2xl text-white/30">vs</span>
+        <div className="flex flex-col items-center gap-2"><BolaClube nome={adversario ? adversario.nome : ""} tamanho={64} /><span className="font-bold text-white text-sm">{adversario ? adversario.nome : "..."}</span></div>
+      </div>
+
+      <button onClick={onJogar} className="px-10 py-4 rounded-xl font-bold text-lg" style={{ background: ACCENT, color: "#241a05" }}>
+        Simular Partida
+      </button>
+    </div>
+  );
+}
+
+function TelaFinal({ nomeTime, status, faseEliminacao, golsCampanha, golsSofridosCampanha, usouPenaltis, margemMaxima, fechou7x0, historicoResultados, rerolls, squad, modo, modoJogo, modoCompeticao, onReiniciar }) {
+  const campeao = status === "campeao";
+  const pontos = calcularPontuacaoCampanha({ campeao, faseEliminacao, golsCampanha, modo });
+  const chave = modoJogo === "desafio" ? chaveRankingDia() : CHAVE_RANKING_GERAL;
+  const ehDupla = modoJogo === "dupla";
+
+  const [apelido, setApelido] = useState(nomeTime);
+  const [salvando, setSalvando] = useState(false);
+  const [salvo, setSalvo] = useState(false);
+  const [ranking, setRanking] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [conquistasNovas, setConquistasNovas] = useState([]);
+  const [streak, setStreak] = useState(null);
+  const [copiado, setCopiado] = useState(false);
+
+  useEffect(() => {
+    let ativo = true;
+    if (!ehDupla) {
+      carregarRanking(chave).then(r => { if (ativo) { setRanking(r); setCarregando(false); } });
+
+      const stats = {
+        campeao, modo, golsSofridos: golsSofridosCampanha, usouPenaltis, margemMaxima, fechou7x0,
+        resorteiosUsados: 3 - rerolls, maiorGrupoClube: maiorGrupoDeClube(squad),
+      };
+      const conquistadasAgora = avaliarConquistas(stats);
+      carregarConquistas().then(async antigas => {
+        if (!ativo) return;
+        const novas = conquistadasAgora.filter(id => !antigas.includes(id));
+        setConquistasNovas(novas);
+        if (novas.length > 0) await salvarConquistas([...antigas, ...novas]);
+      });
+
+      salvarStreak(campeao).then(s => { if (ativo) setStreak(s); });
+    }
+    return () => { ativo = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function salvar() {
+    setSalvando(true);
+    const novo = await salvarNoRanking(chave, { nome: apelido.trim() || nomeTime, pontos, fase: campeao ? "Campeão" : faseEliminacao, data: dataDeHoje() });
+    setSalvando(false);
+    if (novo) { setRanking(novo); setSalvo(true); }
+  }
+
+  async function compartilhar() {
+    const texto = gerarTextoCompartilhavel({ nomeTime, campeao, faseEliminacao, historicoResultados, pontos, modo, modoCompeticao });
+    try {
+      await navigator.clipboard.writeText(texto);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch (e) { /* clipboard indisponível, ignora silenciosamente */ }
+  }
+
+  return (
+    <div className="animate-[cartaIn_.5s_ease] text-center py-10">
+      {campeao ? (
+        <div className="mb-6 drop-shadow-[0_0_30px_rgba(224,177,60,.5)]">
+          <TrofeuGenerico tamanho={170} />
+        </div>
+      ) : (
+        <div className="text-7xl mb-6">⚽</div>
+      )}
+      <div className="flex justify-center mb-4"><Monograma nome={nomeTime} tamanho={56} /></div>
+      <h2 className="titulo text-4xl text-white mb-3">{nomeTime}</h2>
+      {campeao ? (
+        <p className="text-lg font-bold mb-2" style={{ color: ACCENT }}>
+          Parabéns, você ganhou a Taça Libertadores{modoCompeticao === "2026" ? " 2026" : ""}!
+        </p>
+      ) : (
+        <p className="text-white/50 mb-2">Eliminado na {faseEliminacao}</p>
+      )}
+
+      {!ehDupla && <div className="numero text-4xl text-white mb-2">{pontos} <span className="text-sm text-white/40 font-normal">pontos</span></div>}
+
+      {!ehDupla && historicoResultados.length > 0 && (
+        <div className="text-xl mb-2 tracking-wider">
+          {historicoResultados.map((r, i) => <span key={i}>{{ V: "🟩", D: "🟥", E: "🟨", P: "🟦" }[r]}</span>)}
+        </div>
+      )}
+
+      {!ehDupla && streak && streak.atual > 0 && (
+        <div className="text-white/40 text-xs mb-6">🔥 Sequência atual: {streak.atual} título{streak.atual > 1 ? "s" : ""} seguido{streak.atual > 1 ? "s" : ""} · Recorde: {streak.recorde}</div>
+      )}
+
+      {!ehDupla && (
+        <button onClick={compartilhar} className="mb-8 px-6 py-2.5 rounded-xl border border-white/15 text-white/80 text-sm font-bold hover:border-white/30 transition-colors">
+          {copiado ? "Copiado!" : "Copiar Card de Resultado"}
+        </button>
+      )}
+
+      {!ehDupla && conquistasNovas.length > 0 && (
+        <div className="max-w-sm mx-auto mb-10">
+          <div className="text-[10px] uppercase tracking-wider mb-3" style={{ color: ACCENT }}>Nova{conquistasNovas.length > 1 ? "s" : ""} conquista{conquistasNovas.length > 1 ? "s" : ""}!</div>
+          <div className="space-y-2">
+            {conquistasNovas.map(id => {
+              const c = CONQUISTAS.find(x => x.id === id);
+              return (
+                <div key={id} className="rounded-lg p-3 text-left" style={{ background: `${ACCENT}15`, border: `1px solid ${ACCENT}40` }}>
+                  <div className="font-bold text-sm" style={{ color: ACCENT }}>🏅 {c.nome}</div>
+                  <div className="text-xs text-white/50">{c.descricao}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {!ehDupla && !salvo ? (
+        <div className="max-w-xs mx-auto mb-10">
+          <input value={apelido} onChange={e => setApelido(e.target.value)} maxLength={24}
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm text-center outline-none focus:border-white/30 mb-3" />
+          <button onClick={salvar} disabled={salvando}
+            className="w-full py-3 rounded-xl font-bold text-sm disabled:opacity-50" style={{ background: ACCENT, color: "#241a05" }}>
+            {salvando ? "Salvando..." : `Salvar no Ranking${modoJogo === "desafio" ? " do Dia" : ""}`}
+          </button>
+        </div>
+      ) : !ehDupla && (
+        <div className="text-emerald-400 text-sm mb-8">Pontuação salva no ranking!</div>
+      )}
+
+      {!ehDupla && (
+        <div className="max-w-sm mx-auto mb-10 text-left">
+          <div className="text-[10px] uppercase tracking-wider text-white/40 mb-3 text-center">
+            {modoJogo === "desafio" ? "Seu Histórico do Desafio de Hoje" : "Seu Histórico"}
+          </div>
+          {carregando && <div className="text-white/30 text-xs text-center">Carregando...</div>}
+          {!carregando && ranking && ranking.length === 0 && <div className="text-white/30 text-xs text-center">Nenhuma campanha salva ainda neste navegador.</div>}
+          {!carregando && ranking && ranking.slice(0, 10).map((r, i) => (
+            <div key={i} className="flex items-center justify-between border-b border-white/5 py-2 text-sm">
+              <span className="text-white/70"><span className="text-white/30 mr-2">{i + 1}º</span>{r.nome}</span>
+              <span className="numero" style={{ color: ACCENT }}>{r.pontos}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button onClick={onReiniciar} className="px-10 py-4 rounded-xl font-bold text-lg" style={{ background: ACCENT, color: "#241a05" }}>
+        Jogar Novamente
+      </button>
+    </div>
+  );
+}
+
+function TelaModoJogo({ onEscolher }) {
+  return (
+    <div className="animate-[cartaIn_.4s_ease] text-center">
+      <div className="text-7xl mb-4">⚽</div>
+      <h1 className="titulo text-3xl md:text-4xl text-white mb-2">Rumo à Glória</h1>
+      <p className="text-white/40 text-sm mb-10">Escolha como você quer jogar</p>
+
+      <div className="space-y-3 max-w-sm mx-auto text-left">
+        <button onClick={() => onEscolher("solo")}
+          className="w-full p-5 rounded-xl border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors">
+          <div className="font-bold text-white mb-1">Solo</div>
+          <div className="text-xs text-white/40">Monte seu time e jogue livremente, sorteios sempre novos</div>
+        </button>
+        <button onClick={() => onEscolher("desafio")}
+          className="w-full p-5 rounded-xl border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors">
+          <div className="font-bold text-white mb-1">Desafio do Dia</div>
+          <div className="text-xs text-white/40">Mesmo sorteio de times pra todo mundo hoje — compare sua pontuação no ranking do dia</div>
+        </button>
+        <button onClick={() => onEscolher("dupla")}
+          className="w-full p-5 rounded-xl border border-white/10 hover:border-white/30 hover:bg-white/5 transition-colors">
+          <div className="font-bold text-white mb-1">2 Jogadores (local)</div>
+          <div className="text-xs text-white/40">Cada um monta seu time no mesmo aparelho e depois se enfrentam</div>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function TelaResultadoDupla({ resultado, onReiniciar }) {
+  const empate = !resultado.vencedor;
+  return (
+    <div className="animate-[cartaIn_.4s_ease] text-center py-10">
+      <div className="flex items-center justify-center gap-6 mb-6">
+        <div className="flex flex-col items-center gap-2">
+          <Monograma nome={resultado.nomeA} tamanho={56} />
+          <span className={`text-sm font-semibold ${resultado.vencedor === resultado.nomeA ? "text-white" : "text-white/40"}`}>{resultado.nomeA}</span>
+        </div>
+        <div className="numero text-4xl text-white">{resultado.golsA} - {resultado.golsB}</div>
+        <div className="flex flex-col items-center gap-2">
+          <Monograma nome={resultado.nomeB} tamanho={56} />
+          <span className={`text-sm font-semibold ${resultado.vencedor === resultado.nomeB ? "text-white" : "text-white/40"}`}>{resultado.nomeB}</span>
+        </div>
+      </div>
+      {resultado.pen && <div className="text-white/40 text-sm mb-4">Pênaltis: {resultado.pen.a} x {resultado.pen.b}</div>}
+      <div className="titulo text-2xl mb-10" style={{ color: ACCENT }}>
+        {empate ? "Empate!" : `${resultado.vencedor} venceu!`}
+      </div>
+      <button onClick={onReiniciar} className="px-10 py-4 rounded-xl font-bold text-lg" style={{ background: ACCENT, color: "#241a05" }}>
+        Jogar Novamente
+      </button>
+    </div>
+  );
+}
+
+/* ============================== APP ============================== */
+
+function LibertadoresLendaria() {
+  const [modoJogo, setModoJogo] = useState(null); // null | "solo" | "desafio" | "dupla"
+  const [faseDupla, setFaseDupla] = useState(null); // null | "draft1" | "draft2"
+  const [squadP1, setSquadP1] = useState(null);
+  const [nomeP1, setNomeP1] = useState("");
+  const [squadP2, setSquadP2] = useState(null);
+  const [resultadoDupla, setResultadoDupla] = useState(null);
+
+  const [golsCampanha, setGolsCampanha] = useState(0);
+  const [golsSofridosCampanha, setGolsSofridosCampanha] = useState(0);
+  const [usouPenaltis, setUsouPenaltis] = useState(false);
+  const [margemMaxima, setMargemMaxima] = useState(0);
+  const [fechou7x0, setFechou7x0] = useState(false);
+  const [historicoResultados, setHistoricoResultados] = useState([]); // 'V' | 'E' | 'D' | 'P' (V nos pênaltis)
+
+  const [fase, setFase] = useState("setup");
+
+  const [nomeTime, setNomeTime] = useState("Seleção do Jogador");
+  const [formacaoKey, setFormacaoKey] = useState("4-3-3");
+  const [modo, setModo] = useState("normal");
+  const [modoCompeticao, setModoCompeticao] = useState("2026");
+
+  const [pool, setPool] = useState([]);
+  const [timeAtual, setTimeAtual] = useState(null);
+  const [squad, setSquad] = useState({ GK: [], DF: [], MF: [], FW: [] });
+  const [rerolls, setRerolls] = useState(3);
+  const [rodada, setRodada] = useState(0);
+
+  const [grupoOponentes, setGrupoOponentes] = useState([]);
+  const [tabelaGrupo, setTabelaGrupo] = useState(null);
+  const [jogosPendentesJogador, setJogosPendentesJogador] = useState([]);
+
+  const [jaEnfrentados, setJaEnfrentados] = useState([]);
+  const [faseAtualIdx, setFaseAtualIdx] = useState(0);
+  const [adversarioAtual, setAdversarioAtual] = useState(null);
+
+  const [partidaAtual, setPartidaAtual] = useState(null); // {adversario, golsA, golsB, eventos, pen, contexto}
+  const [partidaSeq, setPartidaSeq] = useState(0);
+
+  const [statusFinal, setStatusFinal] = useState(null);
+  const [faseEliminacao, setFaseEliminacao] = useState("");
+
+  const formacao = FORMACOES[formacaoKey];
+  const totalVagas = 1 + formacao.DF + formacao.MF + formacao.FW;
+
+  const forcaJogador = useMemo(() => {
+    const total = squad.GK.length + squad.DF.length + squad.MF.length + squad.FW.length;
+    if (total < totalVagas) return null;
+    return calcularForcaSquad(squad);
+  }, [squad, totalVagas]);
+
+  /* ---------- DRAFT ---------- */
+
+  function iniciarDraft() {
+    if (modoJogo === "desafio") ativarRngDoDia(); else ativarRngNormal();
+    const poolInicial = shuffle(JOGADORES.map((_, i) => i));
+    const primeiro = poolInicial.shift();
+    setPool(poolInicial);
+    setTimeAtual(JOGADORES[primeiro]);
+    setSquad({ GK: [], DF: [], MF: [], FW: [] });
+    setRerolls(3);
+    setRodada(1);
+    setGolsCampanha(0);
+    setGolsSofridosCampanha(0);
+    setUsouPenaltis(false);
+    setMargemMaxima(0);
+    setFechou7x0(false);
+    setHistoricoResultados([]);
+    setFase("draft");
+  }
+
+  function vagaAberta(squadAtual, posicao) {
+    const max = posicao === "GK" ? 1 : formacao[posicao];
+    return squadAtual[posicao].length < max;
+  }
+
+  function escolherJogador(jogador) {
+    if (!vagaAberta(squad, jogador.posicao)) return;
+    const novoSquad = { ...squad, [jogador.posicao]: [...squad[jogador.posicao], { ...jogador, origem: timeAtual.time }] };
+    setSquad(novoSquad);
+
+    const totalAgora = novoSquad.GK.length + novoSquad.DF.length + novoSquad.MF.length + novoSquad.FW.length;
+    if (totalAgora >= totalVagas) { setFase("squad"); return; }
+    if (pool.length === 0) { setFase("squad"); return; }
+    const novoPool = [...pool];
+    const proximo = novoPool.shift();
+    setPool(novoPool);
+    setTimeAtual(JOGADORES[proximo]);
+    setRodada(r => r + 1);
+  }
+
+  function resortear() {
+    if (rerolls <= 0 || pool.length === 0) return;
+    const novoPool = [...pool];
+    const proximo = novoPool.shift();
+    setPool(novoPool);
+    setTimeAtual(JOGADORES[proximo]);
+    setRerolls(r => r - 1);
+  }
+
+  /* ---------- APÓS VER O TIME MONTADO (ramifica pro modo dupla) ---------- */
+
+  function aposVerSquad() {
+    if (modoJogo === "dupla") {
+      if (faseDupla === "draft1") {
+        setSquadP1(squad);
+        setNomeP1(nomeTime);
+        setFaseDupla("draft2");
+        setNomeTime("Time 2");
+        setFase("setup");
+        return;
+      }
+      if (faseDupla === "draft2") {
+        setSquadP2(squad);
+        iniciarPartidaDupla(squadP1, squad, nomeP1, nomeTime);
+        return;
+      }
+    }
+    sortearGrupo();
+  }
+
+  function iniciarPartidaDupla(sqA, sqB, nomeA, nomeB) {
+    const forcaA = calcularForcaSquad(sqA);
+    const forcaB = calcularForcaSquad(sqB);
+    const { golsA, golsB } = simularPartida(forcaA, forcaB);
+    let pen = null;
+    if (golsA === golsB) {
+      const gkA = sqA.GK[0] ? sqA.GK[0].overall : 70;
+      const gkB = sqB.GK[0] ? sqB.GK[0].overall : 70;
+      pen = penaltis(forcaA.ataque + forcaA.defesa + gkA * 0.3, forcaB.ataque + forcaB.defesa + gkB * 0.3);
+    }
+    const eventos = gerarEventosPartida(golsA, golsB, sqA, sqB);
+    setPartidaAtual({ nomeA, nomeB, golsA, golsB, eventos, pen, contexto: "dupla" });
+    setPartidaSeq(s => s + 1);
+  }
+
+  /* ---------- GRUPO (3 adversários aleatórios, sem seguir grupos oficiais) ---------- */
+
+  function sortearGrupo() {
+    const pool3 = poolOponentes(modoCompeticao);
+    const oponentes = shuffle(pool3).slice(0, 3);
+    setGrupoOponentes(oponentes);
+
+    const nomes = [nomeTime, ...oponentes.map(o => o.nome)];
+    const tabela = novaTabela(nomes);
+
+    todosConfrontos(nomes).forEach(([a, b]) => {
+      if (a === nomeTime || b === nomeTime) return;
+      const ta = oponentes.find(o => o.nome === a), tb = oponentes.find(o => o.nome === b);
+      const ida = simularPartida(ta, tb);
+      aplicarResultado(tabela, a, b, ida.golsA, ida.golsB);
+      const volta = simularPartida(tb, ta);
+      aplicarResultado(tabela, b, a, volta.golsA, volta.golsB);
+    });
+
+    const pendentes = [
+      ...oponentes.map(op => ({ id: `${op.nome}-ida`, adversario: op.nome, perna: "Ida" })),
+      ...oponentes.map(op => ({ id: `${op.nome}-volta`, adversario: op.nome, perna: "Volta" })),
+    ];
+
+    setTabelaGrupo(tabela);
+    setJogosPendentesJogador(pendentes);
+    setFase("grupo");
+  }
+
+  function iniciarPartidaGrupo(pendente) {
+    const oponente = grupoOponentes.find(o => o.nome === pendente.adversario);
+    const { golsA, golsB } = simularPartida({ ataque: forcaJogador.ataque, defesa: forcaJogador.defesa }, oponente);
+    const eventos = gerarEventosPartida(golsA, golsB, squad);
+    setPartidaAtual({ adversario: oponente, golsA, golsB, eventos, pen: null, contexto: "grupo", pendenteId: pendente.id });
+    setPartidaSeq(s => s + 1);
+  }
+
+  /* ---------- MATA-MATA (sorteio livre a cada rodada, sem repetir adversário) ---------- */
+
+  function irParaMataMata() {
+    const ordenada = ordenarTabela(tabelaGrupo);
+    const top2 = ordenada.slice(0, 2).map(t => t.nome);
+    if (!top2.includes(nomeTime)) {
+      setStatusFinal("eliminado");
+      setFaseEliminacao("Fase de Grupos");
+      setFase("final");
+      return;
+    }
+    const enfrentados = grupoOponentes.map(o => o.nome);
+    setJaEnfrentados(enfrentados);
+    setFaseAtualIdx(0);
+    setAdversarioAtual(sortearAdversarioKnockout(modoCompeticao, 0, enfrentados));
+    setFase("knockout");
+  }
+
+  function iniciarPartidaKnockout() {
+    const { golsA, golsB } = simularPartida({ ataque: forcaJogador.ataque, defesa: forcaJogador.defesa }, adversarioAtual);
+    let pen = null;
+    if (golsA === golsB) {
+      const gkForca = squad.GK[0] ? squad.GK[0].overall : 70;
+      pen = penaltis(forcaJogador.ataque + forcaJogador.defesa + gkForca * 0.3, adversarioAtual.ataque + adversarioAtual.defesa);
+    }
+    const eventos = gerarEventosPartida(golsA, golsB, squad);
+    setPartidaAtual({ adversario: adversarioAtual, golsA, golsB, eventos, pen, contexto: "knockout" });
+    setPartidaSeq(s => s + 1);
+  }
+
+  function onContinuarPartida({ golsA, golsB, pen }) {
+    const p = partidaAtual;
+
+    if (p.contexto === "dupla") {
+      const venceu = pen ? pen.a > pen.b : golsA > golsB;
+      const empate = !pen && golsA === golsB;
+      setResultadoDupla({ nomeA: p.nomeA, nomeB: p.nomeB, golsA, golsB, pen, vencedor: empate ? null : (venceu ? p.nomeA : p.nomeB) });
+      setPartidaAtual(null);
+      setFase("resultadoDupla");
+      return;
+    }
+
+    if (p.contexto === "grupo") {
+      setGolsCampanha(g => g + golsA);
+      setGolsSofridosCampanha(g => g + golsB);
+      setMargemMaxima(m => Math.max(m, golsA - golsB));
+      if (golsA === 7 && golsB === 0) setFechou7x0(true);
+      setHistoricoResultados(h => [...h, golsA > golsB ? "V" : golsA < golsB ? "D" : "E"]);
+      const novaTab = {};
+      Object.keys(tabelaGrupo).forEach(k => { novaTab[k] = { ...tabelaGrupo[k] }; });
+      aplicarResultado(novaTab, nomeTime, p.adversario.nome, golsA, golsB);
+      setTabelaGrupo(novaTab);
+      setJogosPendentesJogador(pend => pend.filter(x => x.id !== p.pendenteId));
+      setPartidaAtual(null);
+      return;
+    }
+
+    setGolsCampanha(g => g + golsA);
+    setGolsSofridosCampanha(g => g + golsB);
+    setMargemMaxima(m => Math.max(m, golsA - golsB));
+    if (golsA === 7 && golsB === 0) setFechou7x0(true);
+    const venceu = pen ? pen.a > pen.b : golsA > golsB;
+    if (pen) setUsouPenaltis(true);
+    setHistoricoResultados(h => [...h, venceu ? (pen ? "P" : "V") : "D"]);
+    setPartidaAtual(null);
+
+    if (!venceu) {
+      setStatusFinal("eliminado");
+      setFaseEliminacao(FASES_ELIMINATORIAS[faseAtualIdx]);
+      setFase("final");
+      return;
+    }
+
+    if (faseAtualIdx === FASES_ELIMINATORIAS.length - 1) {
+      setStatusFinal("campeao");
+      setFase("final");
+      return;
+    }
+
+    const novosEnfrentados = [...jaEnfrentados, p.adversario.nome];
+    setJaEnfrentados(novosEnfrentados);
+    const novoIdx = faseAtualIdx + 1;
+    setFaseAtualIdx(novoIdx);
+    setAdversarioAtual(sortearAdversarioKnockout(modoCompeticao, novoIdx, novosEnfrentados));
+  }
+
+  function reiniciar() {
+    setModoJogo(null);
+    setFaseDupla(null);
+    setSquadP1(null);
+    setNomeP1("");
+    setSquadP2(null);
+    setResultadoDupla(null);
+    setGolsCampanha(0);
+    setGolsSofridosCampanha(0);
+    setUsouPenaltis(false);
+    setMargemMaxima(0);
+    setFechou7x0(false);
+    setHistoricoResultados([]);
+    setFase("setup");
+    setNomeTime("Seleção do Jogador");
+    setFormacaoKey("4-3-3");
+    setModo("normal");
+    setModoCompeticao("2026");
+    setSquad({ GK: [], DF: [], MF: [], FW: [] });
+    setGrupoOponentes([]);
+    setTabelaGrupo(null);
+    setJogosPendentesJogador([]);
+    setJaEnfrentados([]);
+    setFaseAtualIdx(0);
+    setAdversarioAtual(null);
+    setStatusFinal(null);
+    setPartidaAtual(null);
+  }
+
+  /* ============================== RENDER ============================== */
+
+  return (
+    <div className="min-h-full w-full" style={{ background: "radial-gradient(ellipse at top, #14251c 0%, #0a1410 55%, #060b08 100%)" }}>
+      <style>{`
+        .numero { font-family: 'Arial Narrow', Impact, sans-serif; font-weight: 900; letter-spacing: -0.02em; }
+        .titulo { font-family: Impact, 'Arial Narrow', sans-serif; letter-spacing: 0.02em; text-transform: uppercase; }
+        @keyframes cartaIn { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .carta-jogador { animation: cartaIn .35s ease both; }
+        .fundo-textura { background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.035) 0%, transparent 60%); }
+      `}</style>
+
+      <div className="max-w-3xl mx-auto px-4 py-8 fundo-textura">
+        {modoJogo === null && <TelaModoJogo onEscolher={m => { setModoJogo(m); if (m === "dupla") { setFaseDupla("draft1"); setNomeTime("Time 1"); } }} />}
+
+        {modoJogo !== null && fase === "setup" && (
+          <TelaSetup
+            nomeTime={nomeTime} setNomeTime={setNomeTime}
+            formacaoKey={formacaoKey} setFormacaoKey={setFormacaoKey}
+            modo={modo} setModo={setModo}
+            modoCompeticao={modoCompeticao} setModoCompeticao={setModoCompeticao}
+            onIniciar={iniciarDraft}
+            ocultarModoCompeticao={modoJogo === "dupla"}
+            tituloEtapa={
+              modoJogo === "dupla" ? (faseDupla === "draft1" ? "Jogador 1: monte seu time" : "Jogador 2: monte seu time") :
+              modoJogo === "desafio" ? "Desafio do Dia — mesmo sorteio pra todo mundo hoje" : undefined
+            }
+          />
+        )}
+
+        {modoJogo !== null && fase === "draft" && (
+          <TelaDraft
+            modo={modo} timeAtual={timeAtual} squad={squad} formacao={formacao}
+            rerolls={rerolls} rodada={rodada} totalVagas={totalVagas}
+            vagaAberta={vagaAberta} onEscolher={escolherJogador} onResortear={resortear}
+          />
+        )}
+
+        {modoJogo !== null && fase === "squad" && (
+          <TelaSquad nomeTime={nomeTime} squad={squad} forca={forcaJogador} onContinuar={aposVerSquad} />
+        )}
+
+        {modoJogo !== null && fase === "grupo" && !partidaAtual && (
+          <TelaGrupo
+            nomeTime={nomeTime} modoCompeticao={modoCompeticao} grupoOponentes={grupoOponentes} tabela={tabelaGrupo}
+            pendentes={jogosPendentesJogador} onJogar={iniciarPartidaGrupo} onAvancar={irParaMataMata}
+          />
+        )}
+
+        {modoJogo !== null && fase === "knockout" && !partidaAtual && (
+          <TelaKnockout nomeTime={nomeTime} modoCompeticao={modoCompeticao} faseNome={FASES_ELIMINATORIAS[faseAtualIdx]} adversario={adversarioAtual} onJogar={iniciarPartidaKnockout} />
+        )}
+
+        {partidaAtual && partidaAtual.contexto !== "dupla" && (
+          <PartidaAoVivo
+            key={partidaSeq}
+            nomeTime={nomeTime}
+            adversarioNome={partidaAtual.adversario.nome}
+            adversarioEhJogador={false}
+            squadA={squad}
+            golsA={partidaAtual.golsA}
+            golsB={partidaAtual.golsB}
+            eventos={partidaAtual.eventos}
+            pen={partidaAtual.pen}
+            onContinuar={onContinuarPartida}
+          />
+        )}
+
+        {partidaAtual && partidaAtual.contexto === "dupla" && (
+          <PartidaAoVivo
+            key={partidaSeq}
+            nomeTime={partidaAtual.nomeA}
+            adversarioNome={partidaAtual.nomeB}
+            adversarioEhJogador={true}
+            golsA={partidaAtual.golsA}
+            golsB={partidaAtual.golsB}
+            eventos={partidaAtual.eventos}
+            pen={partidaAtual.pen}
+            onContinuar={onContinuarPartida}
+          />
+        )}
+
+        {fase === "resultadoDupla" && resultadoDupla && (
+          <TelaResultadoDupla resultado={resultadoDupla} onReiniciar={reiniciar} />
+        )}
+
+        {fase === "final" && (
+          <TelaFinal
+            nomeTime={nomeTime} status={statusFinal} faseEliminacao={faseEliminacao}
+            golsCampanha={golsCampanha} golsSofridosCampanha={golsSofridosCampanha}
+            usouPenaltis={usouPenaltis} margemMaxima={margemMaxima} fechou7x0={fechou7x0}
+            historicoResultados={historicoResultados} rerolls={rerolls} squad={squad}
+            modo={modo} modoJogo={modoJogo} modoCompeticao={modoCompeticao}
+            onReiniciar={reiniciar}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(React.createElement(LibertadoresLendaria));
+
+</script>
+</body>
+</html>
